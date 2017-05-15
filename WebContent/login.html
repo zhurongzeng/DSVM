@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+    <meta name="keyword" content=""/>
+    <link rel="stylesheet" href="files/css/bootstrap.css">
+    <link rel="stylesheet" href="files/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="files/css/register.css">
+    <script src="files/js/jquery.min.js"></script>
+    <script src="js/jquery-1.11.2.min.js" type="text/javascript"></script>
+    <script src="js/sha1.js" type="text/javascript"></script>
+    <script></script>
+    <title>系统登录页面</title>
+    <script type="text/javascript">
+        //jquery的加载方法
+		$(function(){
+			 $("button").click(function(){
+           		login();
+           });
+		});
+		
+         $(document).keypress(function(e){
+             var keycode;
+             if(window.event){
+                 keycode = e.keyCode;
+             }else{
+                 keycode= e.which;
+             }
+             switch(keycode){
+                 case 13: login(); break;
+             }
+         });
+         
+         function login(){
+         		var userId = $("#userId").val();
+           		var password = $("#userPwd").val();
+           		
+           		if(null == userId || "" == userId){
+           			alert("请输入用户名！");
+           			return;
+           		}
+           		
+           		if(null == password || "" == password){
+           			alert("请输入密码！");
+           			return;
+           		}
+           		
+           		var userPwd = hex_sha1(password);
+           		$("#userPwd").val(userPwd);
+           		
+           		loginForm.action = "loginUser.do";
+				loginForm.method = "post";
+				loginForm.submit();
+         }
+		
+   </script>
+</head>
+<body>
+   <div id="backdrop">
+       <div class="register">
+           <b></b>
+            <form name="loginForm" action="" method="post">
+               <div class="input-group">
+                   <span class="input-group-addon" id="basic-addon1"><i class="icon-user icon-2x"></i></span>
+                   <input type="text" id="userId" name="userId" class="form-control" placeholder="账号" aria-describedby="basic-addon1">
+               </div>
+
+               <div class="input-group">
+                   <span class="input-group-addon" id="basic-addon2"><i class="icon-lock icon-2x"></i></span>
+                   <input type="password" id="userPwd" name="userPwd" class="form-control" placeholder="密码" aria-describedby="basic-addon2">
+               </div>
+               <button type="button">登录</button>
+           </form>
+       </div>
+   </div>
+   
+</body>
+</html>

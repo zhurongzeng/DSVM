@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- Console Appender, used to record activemq log. -->
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="[%d{yyyy/MM/dd HH:mm:ss}]-[%p]-%m%n" />
+        </layout>
+        <filter class="com.dashuf.core.log.DashufAuditFilter" />
+    </appender>
+    
+    <!-- app.log -->
+    <appender name="appLog" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="logs/app.log" />
+        <param name="Append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="[%d{yyyy/MM/dd HH:mm:ss}]-[%p]-%m%n" />
+        </layout>
+        <filter class="com.dashuf.core.log.DashufAuditFilter" />
+    </appender>
+    
+    <!-- error.log -->
+    <appender name="errorLog" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="logs/error.log" />
+        <param name="Append" value="true" />
+        <param name="Threshold" value="ERROR#com.dashuf.core.log.DashufLevel" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="[%d{yyyy/MM/dd HH:mm:ss}]-[%p]-%m%n" />
+        </layout>
+        <filter class="com.dashuf.core.log.DashufAuditFilter" />
+    </appender>
+    
+    <!-- audit.log -->
+    <appender name="auditLog" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="logs/audit.log" />
+        <param name="Append" value="true" />
+        <param name="Threshold" value="AUDIT#com.dashuf.core.log.DashufLevel" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="[%d{yyyy/MM/dd HH:mm:ss}]-[%p]-%m%n" />
+        </layout>
+    </appender> 
+
+
+    <logger name="com.dashuf.dsvm">
+        <level value="DEBUG#com.dashuf.core.log.DashufLevel" />
+        <appender-ref ref="appLog" />
+        <appender-ref ref="auditLog" />
+        <appender-ref ref="errorLog" />
+    </logger>
+    
+    <logger name="com.dashuf.core">
+        <level value="ERROR#com.dashuf.core.log.DashufLevel" />
+        <appender-ref ref="appLog" />
+        <appender-ref ref="auditLog" />
+        <appender-ref ref="errorLog" />
+    </logger>
+
+    <root>
+        <priority value="ERROR#com.dashuf.core.log.DashufLevel" />
+        <appender-ref ref="stdout" />
+    </root>
+</log4j:configuration>

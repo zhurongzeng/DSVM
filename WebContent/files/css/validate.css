@@ -1,0 +1,13 @@
+
+form .form-group {position: relative;}
+form .form-group .form-control {width: 50%; float: left;}
+.error[type="text"],.error[type="password"],textarea.error{border: 1px solid #843534;}
+.error[type="text"],.error[type="password"],textarea.error,select.error,.error .select2-container--classic .select2-selection--single {
+    border-color: #843534;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;}
+.select2-hidden-accessible.error{float: left;}
+form label.error{ color: #843534; padding-left: 15px; padding-top: 3px;
+}
+.registMain label.error {display: none;  position: absolute; z-index: 99;  background: #000000; color: #ffffff;
+    padding: 3px 8px; border-radius: 4px ; font-size: 12px; margin-top: 3px;right: 5px;}

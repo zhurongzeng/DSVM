@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="usermanagement">
+
+	<select id="checkUserIsExist" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO" resultType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+	  
+		  SELECT a.user_id userId,
+		         a.user_name userName,
+		         a.user_pwd userPwd,
+		         a.region_code regionCode,
+		         a.partner_id partnerId,
+		         (select partner_name
+		            from partner_table
+		           where lineid = a.partner_id) partnerName,
+		         date_login loginDate 
+		    FROM user_info a
+		   WHERE user_id = upper(#{userId})
+		     AND (end_date IS NULL OR end_date > NOW())
+
+	</select>
+	
+	<update id="updateUserInfoLoginDate" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+	    update  user_info set date_login = now() ,updated_by=upper(#{userId}),date_updated=now() 
+	    where user_id=upper(#{userId}) AND (end_date IS NULL OR end_date> NOW())
+	</update>
+
+	<select id="queryUserList" parameterType="java.util.Map" resultType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+		
+		SELECT a.user_id userId,
+		       a.user_name userName,
+		       a.user_pwd userPwd,
+		       a.region_code regionCode,
+		       a.partner_id partnerId,
+		       (select partner_name from partner_table where lineid = a.partner_id) partnerName,
+		       date_login loginDate 
+		  From user_info a , user_role_relation_tbl b
+		 where a.user_id = b.user_id
+		 <if test="roleId == 'head_admin'">
+		  and b.role_id not in ('super_admin')
+		 </if>
+		 and  (a.end_date IS NULL OR a.end_date > NOW())
+
+	</select>
+	
+	<select id="queryPartnerTable" resultType="com.dashuf.dsvm.common.dto.PartnerDTO">
+		select lineid lineId,partner_name partnerName from partner_table order by lineid
+	</select>
+	
+	<insert id="addUserInfo" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+		INSERT INTO user_info
+				  (user_id,
+				   user_name,
+				   user_pwd,
+				   partner_id,
+				   date_login,
+				   start_date,
+				   created_by,
+				   updated_by)
+				VALUES
+				  (upper(#{userId}), 
+				   #{userName},
+				   #{userPwd},
+				   #{partnerId}, 
+				   now(), 
+				   now(), 
+				   upper(#{loginUser}), 
+				   upper(#{loginUser}))
+	</insert>
+	
+	<update id="updateUserInfo" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+	    update user_info
+		   set user_name    = #{userName},
+		       user_pwd     = #{userPwd},
+		       partner_id   = #{partnerId},
+		       updated_by   = upper(#{loginUser}),
+		       date_updated = now()
+		 where user_id = upper(#{userId})
+		   AND (end_date IS NULL OR end_date > NOW())
+	</update>
+	
+	<update id="deleteUserInfo" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+		update user_info
+		   set end_date    = now(),
+		       updated_by   = upper(#{loginUser}),
+		       date_updated = now() 
+		 where user_id = upper(#{userId})
+		   AND (end_date IS NULL OR end_date > NOW())
+	</update>
+	
+	<select id="queryUserRoleInfo" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO" resultType="com.dashuf.dsvm.usermanagement.dto.RoleInfoDTO">
+         SELECT a.user_id userId, b.role_id roleId, b.role_name roleName 
+           FROM user_role_relation_tbl a, role_info b
+          WHERE a.role_id = b.role_id
+            AND a.user_id = upper(#{userId})
+            and (b.end_date is null OR b.end_date > NOW())
+	</select>
+	
+	<insert id="insertUserRole" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO" >
+		insert into user_role_relation_tbl(user_id,role_id) values (upper(#{userId}),#{roleInfoDTO.roleId})
+	</insert>
+	
+	<select id="queryRoleInfo" resultType="com.dashuf.dsvm.usermanagement.dto.RoleInfoDTO" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+		select role_id roleId,role_name roleName from role_info 
+		<where>
+	      <if test="roleInfoDTO.roleId != null and roleInfoDTO.roleId != 'super_admin'">
+	          role_id not in ('super_admin')
+	      </if>
+	    </where>
+	</select>
+	
+	<update id="updateRoleInfo" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+		update user_role_relation_tbl set role_id=#{roleInfoDTO.roleId} where user_id=upper(#{userId})
+	</update>
+	
+	<delete id="deleteUserRoleRelation" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO">
+		delete from user_role_relation_tbl where user_id=upper(#{userId})
+	</delete>
+	
+	<insert id="insertLoginRecords" parameterType="com.dashuf.dsvm.usermanagement.dto.UserManagementDTO" >
+		insert into user_login_records
+		  (user_id,
+		   user_name,
+		   partner_id,
+		   role_id,
+		   date_login,
+		   date_created,
+		   created_by,
+		   date_updated,
+		   updated_by)
+		values
+		  (upper(#{userId}), #{userName}, #{partnerId}, #{roleInfoDTO.roleId}, now(), now(), upper(#{userId}), now(), upper(#{userId}))
+	</insert>
+	
+</mapper>

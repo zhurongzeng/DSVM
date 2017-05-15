@@ -1,0 +1,16 @@
+a[class*=navbar-brand]>img{
+	margin-top:0;
+}
+div[class*=collapse]{
+	margin-top:-59px;
+}
+div[class*=input-group]{
+	float:left;
+	width:500px;
+}
+#startTime{
+	margin-left:0;
+}
+#table>thead tr th{
+	font-size:12px;
+}

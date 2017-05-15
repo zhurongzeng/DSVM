@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="video">
+
+	<select id="checkVideoOperationRecord" parameterType="java.util.Map" resultType="Integer">
+		select count(*)
+		  from video_operation_record
+		 where serialno = #{serialNo}
+		   and operation_flag = #{flag}
+		   AND STR_TO_DATE(date_created, '%Y-%m-%d') = STR_TO_DATE(NOW(), '%Y-%m-%d')
+
+	</select>
+	
+	<insert id="insertVideoOperationRecord" parameterType="java.util.Map">
+		insert into video_operation_record
+			  (serialNo,
+			   client_name,
+			   idNo,
+			   partner_name,
+			   region_code,
+			   region_name,
+			   sign_user_id,
+			   sign_user_name,
+			   video_path,
+			   start_date,
+			   operation_user,
+			   operation_flag)
+			values
+			  (#{serialNo},
+			  #{client_name},
+			  #{idNo},
+			  #{partner_name},
+			  #{region_code},
+			  #{region_name},
+			  #{sign_user_id},
+			  #{sign_user_name},
+			  #{video_path},
+			  str_to_date(#{start_date},'%Y/%m/%d %H:%i:%s'),
+			  #{operation_user},
+			  #{flag})
+					
+	</insert>
+	
+	<select id="queryPartnerCount" parameterType="java.util.Map" resultType="Integer">
+		select count(*) from partner_table
+	</select>
+	
+	<insert id="insertParterTable" parameterType="com.dashuf.dsvm.common.dto.PartnerDTO">
+		insert into partner_table(lineId,partner_name) value (#{lineId},#{partnerName})
+	</insert>
+	
+	<delete id="deletePartnerTable">
+		delete from partner_table
+	</delete>
+
+</mapper>
