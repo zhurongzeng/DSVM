@@ -11,7 +11,7 @@
 	 
 	<!-- 配置 DashufPropertiesUtil读取的配置文件。如果不同的配置文件有相同的属性，则后者会覆盖前者--> 
 	<util:list id="dashuf.properties.fullFileName" list-class="java.util.ArrayList">  
-    	<value>D:\SVNShare\trunk\DSVM\outside\dsvm-context.properties</value>
+    	<value>E:\workspace-p\DSVM\outside\dsvm-context.properties</value>
 	</util:list>
   
     

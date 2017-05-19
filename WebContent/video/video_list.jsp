@@ -176,7 +176,6 @@
 			});
 		}
 
-		var w;
 		function uploadVideo(count) {
 			if (confirm("本视频内容涉及到客户及银行信息保密，请勿外泄及传播，是否确定下载吗？")) {
 				var serialNo = $("#serialNo" + count).val();
@@ -225,7 +224,6 @@
 						                    console.info(frame);
 						                  }
 						            });
-						            //w = window.open(cosPath,'newwindow','height=100,width=400,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
 						} else {
 							layer.alert(returnData.msg, {
 								icon : 2
