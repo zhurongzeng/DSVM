@@ -1,24 +1,28 @@
 package com.dashuf.dsvm.video.controller;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.dashuf.dsvm.common.util.CommonPathUtils;
 import com.dashuf.dsvm.usermanagement.dto.UserManagementDTO;
 import com.dashuf.dsvm.video.service.SignVideoService;
@@ -112,6 +116,48 @@ public class SignVideoController {
 		}
 		System.out.println(jsonModel.toString());
 		return jsonModel.toString();
+	}
+	
+	@RequestMapping(value = "batchInsertVideoOperationRecord",produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	@Transactional
+	public String batchInsertVideoOperationRecord(@RequestBody String recordJsonStr,
+			@ModelAttribute("session_user_info") UserManagementDTO loginUserDTO) throws Exception {
+		System.out.println("获取登录用户：" + loginUserDTO.getUserId());
+		JSONArray jsonModel = new JSONArray();
+		JSONArray videoRecords = JSON.parseArray(recordJsonStr);
+		for (int i = 0; i < videoRecords.size(); i++) {
+			JSONObject record = videoRecords.getJSONObject(i);
+			Map<String, String> inputMap = new HashMap<String, String>();
+			inputMap.put("serialNo", record.getString("serialNo"));
+			inputMap.put("client_name", record.getString("customerName"));
+			inputMap.put("idNo", record.getString("certId"));
+			inputMap.put("partner_name", record.getString("partnerName"));
+			inputMap.put("region_code", record.getString("inputOrgId"));
+			inputMap.put("region_name", record.getString("orgName"));
+			inputMap.put("sign_user_id", record.getString("signuserid"));
+			inputMap.put("sign_user_name", record.getString("signUserName"));
+			inputMap.put("video_path", URLDecoder.decode(record.getString("cosPath"), "UTF-8"));
+			inputMap.put("start_date", record.getString("startDate"));
+			inputMap.put("flag", record.getString("flag"));
+			inputMap.put("operation_user", loginUserDTO.getUserId());
+
+			JSONObject videoResult = new JSONObject();
+			Map<String, String> resultMap = signVideoService.insertVideoOperationRecord(inputMap);
+			String operationFlag = resultMap.get("operationFlag");
+			String msg = resultMap.get("msg");
+			if (operationFlag != null && "Y".equals(operationFlag)) {
+				videoResult.put("scs", true);
+				videoResult.put("customerName", record.getString("customerName"));
+				videoResult.put("path", URLDecoder.decode(record.getString("cosPath"), "UTF-8"));
+			} else {
+				videoResult.put("scs", false);
+				videoResult.put("msg", msg);
+			}
+			System.out.println(jsonModel.toString());
+			jsonModel.add(videoResult.toJSONString());
+		}
+		return jsonModel.toJSONString();
 	}
 	
 	@RequestMapping("onlineVideo")
